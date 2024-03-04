@@ -43,46 +43,56 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late final PrimesBLoC _counterMain = PrimesBLoC()..stream.listen(_streamController.add);
   // final _deps = TransitiveDependency(httpClient: Client());
-  late final JsonBlocIsolated _counterIsolated = JsonBlocIsolated(createController: (deps) => PrimesBLoC())
+  late final PrimesBlocIsolated _counterIsolated = PrimesBlocIsolated(createController: (deps) => PrimesBLoC())
     ..stream.listen(_streamController.add);
 
-  final _streamController = StreamController.broadcast();
+  final _streamController = StreamController<PrimesBlocState?>.broadcast();
   late final stream = _streamController.stream;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: StreamBuilder(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+        ),
+        body: StreamBuilder(
+            stream: stream,
+            builder: (context, data) => ListView.builder(
+                  itemBuilder: (context, index) => ListTile(
+                    title: Text('${data.data?.value}'),
+                  ),
+                )),
+        floatingActionButton: StreamBuilder(
           stream: stream,
-          builder: (context, data) => ListView.builder(
-                itemBuilder: (context, index) => ListTile(
-                  title: Text('${data.data}'),
+          builder: (context, snapshot) {
+            final isLoading = snapshot.data?.isLoading ?? false;
+
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                GestureDetector(
+                    onTap: _counterIsolated.increment,
+                    child: DecoratedBox(
+                      decoration: const BoxDecoration(color: Colors.greenAccent),
+                      child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: isLoading ? const CircularProgressIndicator() : const Icon(Icons.play_arrow)),
+                    )),
+                const SizedBox(
+                  width: 15,
                 ),
-              )),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          GestureDetector(
-              onTap: _counterIsolated.increment,
-              child: const DecoratedBox(
-                decoration: BoxDecoration(color: Colors.greenAccent),
-                child: Padding(padding: EdgeInsets.all(24), child: Icon(Icons.play_arrow)),
-              )),
-          const SizedBox(
-            width: 15,
-          ),
-          GestureDetector(
-              onTap: () => _counterMain.add(const SomeCoolEvent.increment()),
-              child: const DecoratedBox(
-                decoration: BoxDecoration(color: Colors.redAccent),
-                child: Padding(padding: EdgeInsets.all(24), child: Icon(Icons.running_with_errors)),
-              ))
-        ],
-      ),
-    );
+                GestureDetector(
+                    onTap: () => _counterMain.add(const SomeCoolEvent.increment()),
+                    child: DecoratedBox(
+                      decoration: const BoxDecoration(color: Colors.redAccent),
+                      child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: isLoading ? const CircularProgressIndicator() : const Icon(Icons.running_with_errors)),
+                    ))
+              ],
+            );
+          },
+        ));
   }
 }

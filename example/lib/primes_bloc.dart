@@ -4,13 +4,14 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:isolated_logic/isolated_logic.dart';
 
-class PrimesBLoC extends Bloc<SomeCoolEvent, int> {
-  PrimesBLoC() : super(0) {
+class PrimesBLoC extends Bloc<SomeCoolEvent, PrimesBlocState> {
+  PrimesBLoC() : super(const PrimesBlocState.idle(0)) {
     on<SomeCoolEvent>(
       (event, emit) async {
         // throw const TlsException('asdasd');
+        emit(PrimesBlocState.loading(state.value));
         final x = await getPrimes(Random().nextInt(30000) + 100000).toList();
-        emit(x.length);
+        emit(PrimesBlocState.idle(x.length));
       },
       transformer: (events, mapper) => events.asyncExpand(mapper),
     );
@@ -73,8 +74,8 @@ class _Decrement$JsonState implements SomeCoolEvent {
   const _Decrement$JsonState();
 }
 
-class JsonBlocIsolated extends IsolatedController<PrimesBLoC, Object, SomeCoolEvent, int> {
-  JsonBlocIsolated({required super.createController});
+class PrimesBlocIsolated extends IsolatedController<PrimesBLoC, Object, SomeCoolEvent, PrimesBlocState> {
+  PrimesBlocIsolated({required super.createController});
 
   @override
   ControllerLifecycleHandler<PrimesBLoC> get controllerLifecycle => ControllerLifecycleHandler(
@@ -84,4 +85,22 @@ class JsonBlocIsolated extends IsolatedController<PrimesBLoC, Object, SomeCoolEv
 
   void increment() => isolateHandle((controller) => controller.add(const SomeCoolEvent.increment()));
   void decrement() => isolateHandle((controller) => controller.add(const SomeCoolEvent.decrement()));
+}
+
+sealed class PrimesBlocState {
+  const PrimesBlocState(this.value);
+
+  const factory PrimesBlocState.idle(int value) = Idle$PrimesBlocState;
+  const factory PrimesBlocState.loading(int value) = Loading$PrimesBlocState;
+  final int value;
+
+  bool get isLoading => this is Loading$PrimesBlocState;
+}
+
+class Idle$PrimesBlocState extends PrimesBlocState {
+  const Idle$PrimesBlocState(int value) : super(value);
+}
+
+class Loading$PrimesBlocState extends PrimesBlocState {
+  const Loading$PrimesBlocState(int value) : super(value);
 }
