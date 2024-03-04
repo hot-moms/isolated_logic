@@ -13,3 +13,6 @@ dependencies:
   collection: ^1.17.2
   meta: ^1.10.0
   stream_transform: ^2.1.0
+
+dev_dependencies:
+  very_good_analysis: ^5.1.0

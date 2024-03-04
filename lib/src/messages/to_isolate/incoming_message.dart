@@ -8,7 +8,6 @@ part 'register_controller_message.dart';
 
 @immutable
 sealed class IncomingIsolateMessage {
-  final String controllerKey;
 
   const IncomingIsolateMessage({required this.controllerKey});
 
@@ -30,6 +29,7 @@ sealed class IncomingIsolateMessage {
     required String controllerKey,
     required void Function(Object) event,
   }) = _$Event$ControllerMessage;
+  final String controllerKey;
 
   T when<T>({
     required T Function(String controllerKey, void Function(Object) event) events,

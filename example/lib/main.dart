@@ -1,17 +1,13 @@
 import 'dart:async';
 
-import 'package:example/app_dependencies.dart';
-import 'package:example/counter_bloc.dart';
+import 'package:example/primes_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:isolated_logic/isolated_logic.dart';
 
 void main() async {
   await logicalHandler.init(
     observer: IsolatedControllerObserver.dartLog(),
-    dependencies: AppDependencies(
-      dependency: TransitiveDependency(httpClient: Client()),
-    ),
+    dependencies: Object(),
   );
 
   runApp(
@@ -45,11 +41,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late final PrimesBLoC _counterMain = PrimesBLoC(TransitiveDependency(httpClient: Client()))
-    ..stream.listen(_streamController.add);
+  late final PrimesBLoC _counterMain = PrimesBLoC()..stream.listen(_streamController.add);
   // final _deps = TransitiveDependency(httpClient: Client());
-  late final JsonBlocIsolated _counterIsolated =
-      JsonBlocIsolated(createController: (deps) => PrimesBLoC(deps.dependency))..stream.listen(_streamController.add);
+  late final JsonBlocIsolated _counterIsolated = JsonBlocIsolated(createController: (deps) => PrimesBLoC())
+    ..stream.listen(_streamController.add);
 
   final _streamController = StreamController.broadcast();
   late final stream = _streamController.stream;
@@ -68,13 +63,26 @@ class _MyHomePageState extends State<MyHomePage> {
                   title: Text('${data.data}'),
                 ),
               )),
-      floatingActionButton: GestureDetector(
-          onTap: () => _counterMain.add(const JsonEvent.increment()),
-          onLongPress: _counterIsolated.increment,
-          child: const DecoratedBox(
-            decoration: BoxDecoration(color: Colors.greenAccent),
-            child: Padding(padding: EdgeInsets.all(24), child: Icon(Icons.plus_one)),
-          )),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          GestureDetector(
+              onTap: _counterIsolated.increment,
+              child: const DecoratedBox(
+                decoration: BoxDecoration(color: Colors.greenAccent),
+                child: Padding(padding: EdgeInsets.all(24), child: Icon(Icons.play_arrow)),
+              )),
+          const SizedBox(
+            width: 15,
+          ),
+          GestureDetector(
+              onTap: () => _counterMain.add(const SomeCoolEvent.increment()),
+              child: const DecoratedBox(
+                decoration: BoxDecoration(color: Colors.redAccent),
+                child: Padding(padding: EdgeInsets.all(24), child: Icon(Icons.running_with_errors)),
+              ))
+        ],
+      ),
     );
   }
 }

@@ -14,9 +14,9 @@ LogicalHandler get logicalHandler => LogicalHandler();
 /// LogicalHandler Singleton class
 @protected
 final class LogicalHandler {
-  static final LogicalHandler _internalSingleton = LogicalHandler._internal();
   factory LogicalHandler() => _internalSingleton;
   LogicalHandler._internal();
+  static final LogicalHandler _internalSingleton = LogicalHandler._internal();
 
   /// [ControllerType] means base class for each controller that isolate handles
   /// Example: BlocBase
@@ -64,7 +64,7 @@ final class LogicalHandler {
     required Stream<Object?> Function(Object) statesStream,
   }) {
     _toLogicIsolate.send(IncomingIsolateMessage.registerController(
-        createController: createController.prepare, controllerKey: controllerKey, stateStream: statesStream));
+        createController: createController.prepare, controllerKey: controllerKey, stateStream: statesStream,),);
   }
 
   void sendEvent(String controllerKey, {required void Function(Object) event}) =>

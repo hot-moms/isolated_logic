@@ -7,9 +7,6 @@ import 'package:meta/meta.dart';
 abstract class IsolatedController<MainController extends Object, DependenciesInterface extends Object,
         EventBaseClass extends Object, StateClass extends Object>
     with IsolatedControllerKey<MainController>, IsolatedControllerState<MainController, StateClass> {
-  @mustBeOverridden
-  ControllerLifecycleHandler<MainController> get controllerLifecycle;
-
   IsolatedController({
     required MainController Function(DependenciesInterface dependencies) createController,
   }) {
@@ -19,6 +16,8 @@ abstract class IsolatedController<MainController extends Object, DependenciesInt
       statesStream: controllerLifecycle.stateStream.prepare,
     );
   }
+  @mustBeOverridden
+  ControllerLifecycleHandler<MainController> get controllerLifecycle;
 
   @nonVirtual
   void isolateHandle(

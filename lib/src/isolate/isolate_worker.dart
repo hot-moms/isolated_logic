@@ -52,7 +52,10 @@ final class IsolatedWorker<DependenciesInterface extends Object> {
   }
 
   void _registerControllerMessage(
-      String controllerKey, Object Function(Object) createController, Stream<Object?> Function(Object) statesStream) {
+    String controllerKey,
+    Object Function(Object) createController,
+    Stream<Object?> Function(Object) statesStream,
+  ) {
     if (_controllersStorage.containsKey(controllerKey)) return;
 
     final controller = createController(_dependencies);

@@ -2,14 +2,11 @@ import 'dart:isolate';
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
-import 'package:example/app_dependencies.dart';
 import 'package:isolated_logic/isolated_logic.dart';
 
-class PrimesBLoC extends Bloc<JsonEvent, int> {
-  final TransitiveDependency dependency;
-
-  PrimesBLoC(this.dependency) : super(0) {
-    on<JsonEvent>(
+class PrimesBLoC extends Bloc<SomeCoolEvent, int> {
+  PrimesBLoC() : super(0) {
+    on<SomeCoolEvent>(
       (event, emit) async {
         // throw const TlsException('asdasd');
         final x = await getPrimes(Random().nextInt(30000) + 100000).toList();
@@ -63,20 +60,20 @@ extension on int {
   }
 }
 
-sealed class JsonEvent {
-  const factory JsonEvent.increment() = _Increment$JsonState;
-  const factory JsonEvent.decrement() = _Decrement$JsonState;
+sealed class SomeCoolEvent {
+  const factory SomeCoolEvent.increment() = _Increment$JsonState;
+  const factory SomeCoolEvent.decrement() = _Decrement$JsonState;
 }
 
-class _Increment$JsonState implements JsonEvent {
+class _Increment$JsonState implements SomeCoolEvent {
   const _Increment$JsonState();
 }
 
-class _Decrement$JsonState implements JsonEvent {
+class _Decrement$JsonState implements SomeCoolEvent {
   const _Decrement$JsonState();
 }
 
-class JsonBlocIsolated extends IsolatedController<PrimesBLoC, AppDependencies, JsonEvent, int> {
+class JsonBlocIsolated extends IsolatedController<PrimesBLoC, Object, SomeCoolEvent, int> {
   JsonBlocIsolated({required super.createController});
 
   @override
@@ -85,6 +82,6 @@ class JsonBlocIsolated extends IsolatedController<PrimesBLoC, AppDependencies, J
         dispose: (controller) => controller.close(),
       );
 
-  void increment() => isolateHandle((controller) => controller.add(const JsonEvent.increment()));
-  void decrement() => isolateHandle((controller) => controller.add(const JsonEvent.decrement()));
+  void increment() => isolateHandle((controller) => controller.add(const SomeCoolEvent.increment()));
+  void decrement() => isolateHandle((controller) => controller.add(const SomeCoolEvent.decrement()));
 }

@@ -23,11 +23,13 @@ extension VoidLink on Function()? {
 extension HandleErrorX on Function(Object) {}
 
 extension FunX<A, T> on A Function(T) {
-  A prepare(Object object) => Function.apply(this, [object]);
+  A prepare(Object object) => Function.apply(this, [object]) as A;
 }
 
 extension WriteRandomX on StringBuffer {
-  void writeRandom() => write(String.fromCharCodes(
-        List.generate(Random().nextInt(12) + 3, (index) => Random().nextInt(33) + 89),
-      ));
+  void writeRandom() => write(
+        String.fromCharCodes(
+          List.generate(Random().nextInt(12) + 3, (index) => Random().nextInt(33) + 89),
+        ),
+      );
 }
